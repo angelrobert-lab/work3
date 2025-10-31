@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.FriendRelationMapper">
+
+    <!-- 基础结果集映射（FriendRelationPo） -->
+    <resultMap id="BaseResultMap" type="com.domain.po.FriendRelationPo">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="friend_id" property="friendId"/>
+        <result column="status" property="status"/>
+        <result column="apply_time" property="applyTime"/>
+        <result column="confirm_time" property="confirmTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 好友VO结果集映射（关联用户表） -->
+    <resultMap id="FriendVoResultMap" type="com.domain.vo.FriendVo">
+        <result column="friend_id" property="friendId"/>
+        <result column="username" property="username"/> <!-- 来自用户表 -->
+        <result column="avatar" property="avatar"/> <!-- 来自用户表 -->
+        <result column="signature" property="signature"/> <!-- 来自用户表 -->
+        <result column="remark" property="remark"/> <!-- 来自好友关系表 -->
+        <result column="confirm_time" property="confirmTime"/>
+        <result column="gender" property="gender"/> <!-- 来自用户表 -->
+    </resultMap>
+
+    <!-- 分页查询好友列表 -->
+    <select id="selectFriendPage" resultMap="FriendVoResultMap">
+        SELECT
+        fr.friend_id,
+        u.username,
+        u.avatar,
+        u.signature,
+        fr.remark,
+        fr.confirm_time,
+        u.gender
+        FROM friend_relation fr
+        LEFT JOIN user u ON fr.friend_id = u.id
+        ${ew.customSqlSegment} <!-- 动态条件（需包含userId筛选） -->
+    </select>
+
+
+    <!-- 校验好友关系 -->
+    <select id="checkMutualFriend" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM friend_relation
+        WHERE (user_id = #{userId} AND friend_id = #{friendId} AND status = 1)
+           OR (user_id = #{friendId} AND friend_id = #{userId} AND status = 1)
+    </select>
+
+</mapper>

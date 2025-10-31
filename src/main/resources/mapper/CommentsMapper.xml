@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.CommentsMapper">
+
+    <resultMap id="CommentVoMap" type="com.domain.vo.CommentsVo">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="user_id" property="userId"/>
+        <result column="message" property="message"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="parent_name" property="parentName"/>
+        <result column="origin_id" property="originId"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 不分页查询评论列表 -->
+    <select id="selectCommentListView" resultMap="CommentVoMap">
+        SELECT * FROM comments
+        <where>
+            ${ew.sqlSegment}
+        </where>
+        <if test="ew.orderByClause != null">
+            ${ew.orderByClause}
+        </if>
+    </select>
+
+    <!-- 分页查询评论列表（复用SQL） -->
+    <select id="selectComment" resultMap="CommentVoMap">
+        SELECT * FROM comments
+        <where>
+            ${ew.sqlSegment}
+        </where>
+        <if test="ew.orderByClause != null">
+            ${ew.orderByClause}
+        </if>
+    </select>
+</mapper>
