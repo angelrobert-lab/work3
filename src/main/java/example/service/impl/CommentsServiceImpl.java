@@ -16,10 +16,10 @@ import com.domain.query.PageQuery;
 import com.domain.vo.CommentsVo;
 import com.domain.vo.PageVo;
 import com.mapper.CommentsMapper;
-import com.mapper.UserMapper;
+import com.service.IArticleMetricService;
 import com.service.ICommentsService;
 import com.utils.Query;
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +27,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, CommentsPo> implements ICommentsService {
+
+    private final IArticleMetricService articleMetricService;
     /**
      * 添加评论
      */
@@ -62,6 +65,8 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, CommentsPo>
             comment.setOriginId(comment.getId());
             updateById(comment);
         }
+
+        articleMetricService.refreshCommentCount(dto.getArticleId());
 
         return CommentsConverter.INSTANCE.commentsPoToCommentsVo(comment);
     }
@@ -119,6 +124,8 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, CommentsPo>
             throw new EIException(BusinessCodeEnum.COMMENT_NOT_EXIST);
         }
 
+        Integer articleId = comment.getArticleId();
+
         if (!comment.getUserId().equals(userId)) {
             throw new EIException(BusinessCodeEnum.NO_PERMISSION_TO_DELETE);
         }
@@ -142,6 +149,8 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, CommentsPo>
             toDelete.add(comment.getId());
             removeBatchByIds(toDelete);
         }
+
+        articleMetricService.refreshCommentCount(articleId);
     }
 
     private void collectChildren(Integer parentId, List<CommentsPo> all, Set<Integer> toDelete) {
