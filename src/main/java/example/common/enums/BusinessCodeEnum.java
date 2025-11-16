@@ -22,6 +22,9 @@ public enum BusinessCodeEnum implements ResultCode {
     UPLOAD_SUCCESS(7, "上传文件成功"),
     ADD_COMMENT_SUCCESS(8, "添加评论成功"),
     QUERY_COMMENT_SUCCESS(9, "查询评论成功"),
+    ARTICLE_METRIC_QUERY_SUCCESS(10, "查询文章互动数据成功"),
+    ARTICLE_LIKE_STATUS_SUCCESS(11, "更新点赞状态成功"),
+    UPDATE_ARTICLE_METRIC_SUCCESS(12, "更新文章互动指标成功"),
 
     // 通用业务错误 (1000-1999)：适用于所有模块的通用错误场景
     PARAM_VALIDATION_ERROR(1001, "参数校验失败"),
